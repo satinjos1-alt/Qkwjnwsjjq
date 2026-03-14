@@ -1,21 +1,23 @@
-name: Gemini_GO
+name: Gemini_Final_Bos
 on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup_Limpio
+      
+      - name: Descargar Proyecto de Drive
         run: |
           pip install gdown
           gdown https://drive.google.com/uc?id=1ZUzXrJ1dUU_5cQzyOO6-y-oH_wEpJlda
           unzip grabpack_in_godot.zip
           D=$(find . -name "project.godot" -exec dirname {} \; | head -n 1)
           echo "P=$D" >> $GITHUB_ENV
-      - name: Exportar_APK
+
+      - name: Exportar APK (Modo Seguro)
         uses: firebelley/godot-export@v5.2.1
         with:
-          # Estos links son internos de GitHub, no deberían fallar
+          # Usamos la version 4.2.1 que es la que buscas
           godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_linux_x86_64.zip
           godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_export_templates.tpz
           relative_project_path: ${{ env.P }}
