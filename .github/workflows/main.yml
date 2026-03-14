@@ -1,33 +1,23 @@
-name: Gemini_Full_Tools
+name: Gemini_Final_Power
 on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Preparar_Todo
+      - name: Preparar_Proyecto
         run: |
           pip install gdown
-          # Bajamos tu juego
           gdown --id 1ZUzXrJ1dUU_5cQzyOO6-y-oH_wEpJlda
           unzip grabpack_in_godot.zip
-          
-          # Bajamos el motor Godot 4.2.1
-          curl -L -o godot.zip https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_linux_x86_64.zip
-          curl -L -o templates.tpz https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_export_templates.tpz
-          
-          # Buscamos la carpeta del proyecto
           D=$(find . -name "project.godot" -exec dirname {} \; | head -n 1)
-          
-          # HERRAMIENTA CLAVE: Usamos rutas absolutas con el protocolo file://
-          echo "PROJ_PATH=$D" >> $GITHUB_ENV
-          echo "GODOT_EXE=file://$GITHUB_WORKSPACE/godot.zip" >> $GITHUB_ENV
-          echo "GODOT_TPZ=file://$GITHUB_WORKSPACE/templates.tpz" >> $GITHUB_ENV
+          echo "P=$D" >> $GITHUB_ENV
 
-      - name: Exportar_APK_Final
+      - name: Exportar_APK_Ya
         uses: firebelley/godot-export@v5.2.1
         with:
-          godot_executable_download_url: ${{ env.GODOT_EXE }}
-          godot_export_templates_download_url: ${{ env.GODOT_TPZ }}
-          relative_project_path: ${{ env.PROJ_PATH }}
+          # Usamos los espejos de TuxFamily que son mas directos para scripts
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_linux_x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_export_templates.tpz
+          relative_project_path: ${{ env.P }}
           archive_output: true
