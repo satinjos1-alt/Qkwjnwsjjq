@@ -1,33 +1,32 @@
-name: Gemini_Final_Cloud
+name: Gemini_Full_Tools
 on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Descarga_Directa
+      - name: Preparar_Todo
         run: |
           pip install gdown
           # Bajamos tu juego
           gdown --id 1ZUzXrJ1dUU_5cQzyOO6-y-oH_wEpJlda
           unzip grabpack_in_godot.zip
           
-          # Bajamos el motor (esto ya funcionó antes)
-          curl -L -o godot_engine.zip https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_linux_x86_64.zip
-          curl -L -o godot_templates.tpz https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_export_templates.tpz
+          # Bajamos el motor Godot 4.2.1
+          curl -L -o godot.zip https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_linux_x86_64.zip
+          curl -L -o templates.tpz https://github.com/godotengine/godot/releases/download/4.2.1-stable/Godot_v4.2.1-stable_export_templates.tpz
           
           # Buscamos la carpeta del proyecto
           D=$(find . -name "project.godot" -exec dirname {} \; | head -n 1)
-          echo "PROJ_PATH=$D" >> $GITHUB_ENV
           
-          # Guardamos la ruta absoluta de los archivos para que no fallen
-          echo "GODOT_EXE=$GITHUB_WORKSPACE/godot_engine.zip" >> $GITHUB_ENV
-          echo "GODOT_TPZ=$GITHUB_WORKSPACE/godot_templates.tpz" >> $GITHUB_ENV
+          # HERRAMIENTA CLAVE: Usamos rutas absolutas con el protocolo file://
+          echo "PROJ_PATH=$D" >> $GITHUB_ENV
+          echo "GODOT_EXE=file://$GITHUB_WORKSPACE/godot.zip" >> $GITHUB_ENV
+          echo "GODOT_TPZ=file://$GITHUB_WORKSPACE/templates.tpz" >> $GITHUB_ENV
 
-      - name: Generar_APK
+      - name: Exportar_APK_Final
         uses: firebelley/godot-export@v5.2.1
         with:
-          # Ahora usamos rutas que GitHub entiende perfectamente
           godot_executable_download_url: ${{ env.GODOT_EXE }}
           godot_export_templates_download_url: ${{ env.GODOT_TPZ }}
           relative_project_path: ${{ env.PROJ_PATH }}
